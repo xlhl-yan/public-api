@@ -1,5 +1,6 @@
 package com.yupi.project.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yupi.project.common.ErrorCode;
@@ -14,6 +15,8 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import java.nio.charset.StandardCharsets;
 
 import static com.yupi.project.constant.UserConstant.ADMIN_ROLE;
 import static com.yupi.project.constant.UserConstant.USER_LOGIN_STATE;
@@ -35,7 +38,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     /**
      * 盐值，混淆密码
      */
-    private static final String SALT = "yupi";
+    private static final String SALT = "AzurLane";
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -63,10 +66,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             // 2. 加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
-            // 3. 插入数据
+            // 3. 分配accessKey，secretKey
+            String accessKey = DigestUtils.md5DigestAsHex((SALT + userAccount + RandomUtil.randomNumbers(5)).getBytes(StandardCharsets.UTF_8));
+            String secretKey = DigestUtils.md5DigestAsHex((SALT + userPassword + RandomUtil.randomNumbers(6)).getBytes(StandardCharsets.UTF_8));
+            // 4. 插入数据
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
+            user.setAccessKey(accessKey);
+            user.setSecretKey(secretKey);
+
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
@@ -138,7 +147,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 仅管理员可查询
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User user = (User) userObj;
-        return user != null && ADMIN_ROLE.equals(user.getUserRole());
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        boolean isAdmin = ADMIN_ROLE.equals(user.getUserRole());
+        return isAdmin;
     }
 
     /**

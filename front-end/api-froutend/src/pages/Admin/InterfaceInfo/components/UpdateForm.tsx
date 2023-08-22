@@ -4,6 +4,7 @@ import {
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
+  ProTable,
   StepsForm,
 } from '@ant-design/pro-components';
 import { FormattedMessage, useIntl } from '@umijs/max';
@@ -26,6 +27,7 @@ export type UpdateFormProps = {
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
+
   const intl = useIntl();
   return (
     <StepsForm

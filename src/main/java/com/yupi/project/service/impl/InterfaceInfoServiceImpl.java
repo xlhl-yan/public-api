@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.Locale;
+
 /**
  * @author xlhl
  * @description 针对表【interface_info(接口信息表)】的数据库操作Service实现
@@ -35,7 +37,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         // 创建时，所有参数必须非空
         if (add) {
             if (StringUtils.isAnyBlank(name, url, method)) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR);
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称、路径、请求方法是必须的");
             }
         }
         //非创建请求参数校验
@@ -48,8 +50,9 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         if (StringUtils.isNotBlank(url) && url.length() >= 1024) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口路径过长");
         }
+        //请求方法是否合法
         if (StringUtils.isNotBlank(method)) {
-            if (RequestMethod.valueOf(method).toString() == null) {
+            if (RequestMethod.valueOf(method.toUpperCase(Locale.ROOT)).toString() == null) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "非法的接口请求方式");
             }
         }

@@ -28,6 +28,12 @@ public class InterfaceInfoAddRequest implements Serializable {
     private String method;
 
     /**
+     * 请求参数
+     * 例：{"username": string,"type": string}
+     */
+    private String requestParams;
+
+    /**
      * 请求头
      */
     private String requestHeader;

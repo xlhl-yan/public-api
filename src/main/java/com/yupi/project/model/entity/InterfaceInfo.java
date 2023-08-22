@@ -11,10 +11,11 @@ import java.util.Date;
 
 /**
  * 接口信息表
+ *
  * @author xlhl
  * @TableName interface_info
  */
-@TableName(value ="interface_info")
+@TableName(value = "interface_info")
 @Data
 public class InterfaceInfo implements Serializable {
     /**
@@ -76,6 +77,13 @@ public class InterfaceInfo implements Serializable {
      */
     @TableField(value = "createTime")
     private Date createTime;
+
+    /**
+     * 请求参数
+     * 例：{"username": string,"type": string}
+     */
+    @TableField(value = "requestParams")
+    private String requestParams;
 
     /**
      * 更新时间

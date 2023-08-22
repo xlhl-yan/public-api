@@ -9,6 +9,7 @@ import java.util.Date;
 /**
  * 用户
  *
+ * @author xlhl
  * @TableName user
  */
 @TableName(value = "user")
@@ -34,6 +35,16 @@ public class User implements Serializable {
      * 用户头像
      */
     private String userAvatar;
+
+    /**
+     * 用户标识
+     */
+    private String accessKey;
+
+    /**
+     * 用户密钥
+     */
+    private String secretKey;
 
     /**
      * 性别

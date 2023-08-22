@@ -26,6 +26,12 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
     private String name;
 
     /**
+     * 请求参数
+     * 例：{"username": string,"type": string}
+     */
+    private String requestParams;
+
+    /**
      * 接口地址
      */
     private String url;

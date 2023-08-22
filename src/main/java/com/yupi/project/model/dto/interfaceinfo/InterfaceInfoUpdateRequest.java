@@ -18,6 +18,12 @@ public class InterfaceInfoUpdateRequest implements Serializable {
     private Long id;
 
     /**
+     * 请求参数
+     * 例：{"username": string,"type": string}
+     */
+    private String requestParams;
+
+    /**
      * 接口名称
      */
     private String name;
