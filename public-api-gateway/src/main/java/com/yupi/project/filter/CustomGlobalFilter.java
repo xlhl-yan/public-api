@@ -1,4 +1,4 @@
-package com.xlhl.publicapigateway;
+package com.yupi.project.filter;
 
 import com.xlhl.publicapiclientsdk.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.*;
  * 全局过滤
  *
  * @author xlhl
- * @Order 过滤器索引，越小优先级越高
+ * # @Order 过滤器索引，越小优先级越高
  */
 @Slf4j
 @Component
@@ -72,7 +72,7 @@ public class CustomGlobalFilter implements GlobalFilter {
             return handleNoAuth(response);
         }
 
-        // todo secretKey 是从数据库中查询获取 根据上面 accessKey
+
         // 判断是否过期
         Calendar beforeTime = Calendar.getInstance();
         beforeTime.add(Calendar.MINUTE, -5);
@@ -81,6 +81,7 @@ public class CustomGlobalFilter implements GlobalFilter {
         if (Long.parseLong(Objects.requireNonNull(timestamp)) < oldTime / 1000) {
             throw new RuntimeException("无权限");
         }
+        // todo secretKey 是从数据库中查询获取 根据上面 accessKey
         String serverSign = SignUtils.getSign(body, "Helena");
         if (!Objects.equals(serverSign, sign)) {
             return handleNoAuth(response);
@@ -90,12 +91,9 @@ public class CustomGlobalFilter implements GlobalFilter {
 //      todo 从数据库中查询模拟接口是否存在，以及请求方法是否匹配（请求参数是否相同） Feign远程调用
 
 //        5. 调用模拟接口（请求转发）
-        Mono<Void> filter = chain.filter(exchange);
 
 //        6. 响应日志
         return handlerResponseLog(exchange, chain);
-//        log.info("响应：" + response.getStatusCode());
-
     }
 
     /**

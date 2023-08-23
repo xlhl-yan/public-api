@@ -33,3 +33,20 @@ logging:
       springframework:
         cloud:
           gateway: trace
+#dubbo:
+#  application:
+#    name: dubbo-springboot-demo-consumer
+#  protocol:
+#    name: dubbo
+#    port: -1
+#  registry:
+#    address: zookeeper://127.0.0.1:2181
+dubbo:
+  application:
+    name: dubbo-springboot-demo-consumer
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    id: nacos-registry
+    address: nacos://localhost:8848
