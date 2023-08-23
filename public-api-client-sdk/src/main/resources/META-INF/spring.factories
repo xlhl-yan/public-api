@@ -1,0 +1,2 @@
+# Spring Boot starter
+org.springframework.boot.autoconfigure.EnableAutoConfiguration = com.xlhl.publicapiclientsdk.PublicApiConfig

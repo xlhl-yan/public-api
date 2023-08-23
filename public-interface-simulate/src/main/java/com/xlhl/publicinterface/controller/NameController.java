@@ -21,8 +21,9 @@ import java.util.Objects;
 public class NameController {
 
     @GetMapping
-    public String getNameByGet(String name) {
+    public String getNameByGet(String name, HttpServletRequest request) {
 
+        System.out.println("AzurLane = " + request.getHeader("AzurLane"));
         return String.format("getNameByGet->你的名字是：%s", name);
     }
 
@@ -42,19 +43,22 @@ public class NameController {
         }
         // todo secretKey 是从数据库中查询获取 根据上面 accessKey
 
-        // 获取5分钟前的时间
+        // 获取5分钟前的时间 判断时间戳是否过期
         Calendar beforeTime = Calendar.getInstance();
         beforeTime.add(Calendar.MINUTE, -5);
         Date beforeDate = beforeTime.getTime();
         long oldTime = beforeDate.getTime();
-        if (Long.parseLong(timestamp) < oldTime) {
+        if (Long.parseLong(timestamp) < oldTime / 1000) {
             throw new RuntimeException("无权限");
         }
         String serverSign = SignUtils.getSign(body, "Helena");
         if (!Objects.equals(serverSign, sign)) {
             throw new RuntimeException("无权限");
         }
-        return String.format("getName->你的名字是：%s", user.getUsername());
+        String result = String.format("getName->你的名字是：%s", user.getUsername());
+        // todo 调用成功后，次数 + 1
+
+        return result;
     }
 
     @PostMapping("/{name}")

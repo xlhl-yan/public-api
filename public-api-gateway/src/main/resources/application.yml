@@ -1,0 +1,35 @@
+server:
+  port: 8082
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - AddResponseHeader=AzurLane,Helena
+      routes:
+        - id: api_route
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/**
+
+#        - id: add_request_header_route
+#          uri: http://localhost:8081
+#          predicates:
+#            - Path=/api/**
+#          filters:
+#            - AddRequestHeader=AzurLane,Helena
+#            - AddRequestParameter=name, xlhl
+#            - name: CircuitBreaker
+#              args:
+#                name: myCircuitBreaker
+#                fallbackUri: forward:/fallback
+#        - id: AzurLane
+#          uri: https://www.baidu.com
+#          predicates:
+#            - Path=/fallback
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: trace
