@@ -2,6 +2,7 @@ server:
   port: 8081
   servlet:
     context-path: /api
+# todo 此配置仅供测试使用，实际应该动态获取
 xlhl:
   client:
     access-key: AzurLane

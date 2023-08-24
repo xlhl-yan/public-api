@@ -224,8 +224,8 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
 
-        com.xlhl.publicapiclientsdk.model.User user = new com.xlhl.publicapiclientsdk.model.User();
-        user.setUsername("xlhl");
+        User user = new User();
+        user.setUserName("xlhl");
         String name = publicApiClient.getName(user);
         if (StringUtils.isBlank(name)) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口无法使用");
@@ -293,7 +293,8 @@ public class InterfaceInfoController {
         PublicApiClient apiClient = new PublicApiClient(accessKey, secretKey);
 
         Gson gson = new Gson();
-        com.xlhl.publicapiclientsdk.model.User user = gson.fromJson(invokeRequest.getUserRequestParams(), com.xlhl.publicapiclientsdk.model.User.class);
+        String params = invokeRequest.getUserRequestParams();
+        User user = gson.fromJson(params, User.class);
 
         String name = apiClient.getName(user);
 

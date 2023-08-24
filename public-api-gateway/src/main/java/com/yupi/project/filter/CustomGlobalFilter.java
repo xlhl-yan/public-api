@@ -11,7 +11,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -34,12 +34,10 @@ import java.util.*;
  * 全局过滤
  *
  * @author xlhl
- * # @Order 过滤器索引，越小优先级越高
  */
 @Slf4j
 @Component
-@Order(-1)
-public class CustomGlobalFilter implements GlobalFilter {
+public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
     private static final List<String> IP_WHITE_LIST = Collections.singletonList("127.0.0.1");
 
@@ -52,13 +50,15 @@ public class CustomGlobalFilter implements GlobalFilter {
     @DubboReference
     private InnerUserInterfaceInfoService userInterfaceInfoService;
 
+    private static final String INTERFACE_HOST = "http://127.0.0.1:8081";
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-//        1. 日志
+        //        1. 日志
         ServerHttpRequest request = exchange.getRequest();
         log.info("请求的唯一标识：{}", request.getId());
 
-        String path = request.getPath().value();
+        String path = INTERFACE_HOST + request.getPath().value();
         log.info("请求的路径：{}", path);
 
         HttpMethod method = request.getMethod();
@@ -93,7 +93,8 @@ public class CustomGlobalFilter implements GlobalFilter {
         try {
             user = userService.getInvokeUser(accessKey);
         } catch (Exception e) {
-            log.info("getInvokeUser Error", e);
+            log.error("getInvokeUser Error", e);
+            return handleInvokeError(response);
         }
         if (user == null) {
             return handleNoAuth(response);
@@ -114,7 +115,7 @@ public class CustomGlobalFilter implements GlobalFilter {
         Date beforeDate = beforeTime.getTime();
         long oldTime = beforeDate.getTime();
         if (Long.parseLong(Objects.requireNonNull(timestamp)) < oldTime / 1000) {
-            throw new RuntimeException("无权限");
+            return handleNoAuth(response);
         }
 
 //        4. 请求的模拟接口是否存在，请求方式是否匹配
@@ -122,7 +123,8 @@ public class CustomGlobalFilter implements GlobalFilter {
         try {
             interfaceInfo = interfaceInfoService.getInterfaceInfo(path, Objects.requireNonNull(method).toString());
         } catch (Exception e) {
-            log.info("getInterfaceInfo Error", e);
+            log.error("getInterfaceInfo Error", e);
+            return handleInvokeError(response);
         }
         if (interfaceInfo == null) {
             return handleNoAuth(response);
@@ -153,7 +155,8 @@ public class CustomGlobalFilter implements GlobalFilter {
 
             //  拿到响应码
             HttpStatus statusCode = originalResponse.getStatusCode();
-            if (statusCode == HttpStatus.OK) {
+            boolean success = statusCode == HttpStatus.OK;
+            if (success) {
                 //  装饰、增强能力
                 ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
                     //  等待调用完转发的接口后才会执行
@@ -220,5 +223,13 @@ public class CustomGlobalFilter implements GlobalFilter {
         response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
         // 返回
         return response.setComplete();
+    }
+
+    /**
+     * @return 过滤器索引，越小优先级越高
+     */
+    @Override
+    public int getOrder() {
+        return -2;
     }
 }

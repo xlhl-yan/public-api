@@ -1,7 +1,7 @@
 package com.xlhl.publicinterface;
 
 import com.xlhl.publicapiclientsdk.clint.PublicApiClient;
-import com.xlhl.publicapiclientsdk.model.User;
+import com.yupi.project.model.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,7 +19,7 @@ class PublicInterfaceApplicationTests {
         String xlhl = publicApiClient.getNameByGet("xlhl");
         System.out.println("xlhl = " + xlhl);
         User user = new User();
-        user.setUsername("xlhl");
+        user.setUserName("xlhl");
         String name = publicApiClient.getName(user);
         System.out.println("name = " + name);
         String post = publicApiClient.getNameByPost("xlhl");

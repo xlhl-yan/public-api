@@ -1,7 +1,7 @@
 package com.xlhl.publicinterface;
 
 import com.xlhl.publicapiclientsdk.clint.PublicApiClient;
-import com.xlhl.publicapiclientsdk.model.User;
+import com.yupi.project.model.entity.User;
 
 
 /**
@@ -18,7 +18,7 @@ public class Main {
 
         PublicApiClient publicClient = new PublicApiClient(accessKey, secretKey);
         User user = new User();
-        user.setUsername("xlhl");
+        user.setUserName("xlhl");
         String result = publicClient.getName(user);
 
         System.out.println("getName = " + result);

@@ -1,7 +1,7 @@
 package com.xlhl.publicinterface.controller;
 
-import com.xlhl.publicapiclientsdk.model.User;
 import com.xlhl.publicapiclientsdk.utils.SignUtils;
+import com.yupi.project.model.entity.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +55,7 @@ public class NameController {
         if (!Objects.equals(serverSign, sign)) {
             throw new RuntimeException("无权限");
         }
-        String result = String.format("getName->你的名字是：%s", user.getUsername());
+        String result = String.format("getName->你的名字是：%s", user.getUserName());
         // todo 调用成功后，次数 + 1
 
         return result;

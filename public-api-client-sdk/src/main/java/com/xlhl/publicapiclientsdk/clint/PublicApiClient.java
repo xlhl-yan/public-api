@@ -4,8 +4,8 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
-import com.xlhl.publicapiclientsdk.model.User;
 import com.xlhl.publicapiclientsdk.utils.SignUtils;
+import com.yupi.project.model.entity.User;
 import lombok.Data;
 
 import java.util.HashMap;
