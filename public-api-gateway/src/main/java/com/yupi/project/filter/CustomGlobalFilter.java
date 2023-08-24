@@ -1,7 +1,13 @@
 package com.yupi.project.filter;
 
 import com.xlhl.publicapiclientsdk.utils.SignUtils;
+import com.yupi.project.model.entity.InterfaceInfo;
+import com.yupi.project.model.entity.User;
+import com.yupi.project.service.InnerInterfaceInfoService;
+import com.yupi.project.service.InnerUserInterfaceInfoService;
+import com.yupi.project.service.InnerUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -10,6 +16,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -36,17 +43,34 @@ public class CustomGlobalFilter implements GlobalFilter {
 
     private static final List<String> IP_WHITE_LIST = Collections.singletonList("127.0.0.1");
 
+    @DubboReference
+    private InnerUserService userService;
+
+    @DubboReference
+    private InnerInterfaceInfoService interfaceInfoService;
+
+    @DubboReference
+    private InnerUserInterfaceInfoService userInterfaceInfoService;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 //        1. 日志
         ServerHttpRequest request = exchange.getRequest();
         log.info("请求的唯一标识：{}", request.getId());
-        log.info("请求的路径：{}", request.getPath().value());
-        log.info("请求的方法：{}", request.getMethod());
+
+        String path = request.getPath().value();
+        log.info("请求的路径：{}", path);
+
+        HttpMethod method = request.getMethod();
+        log.info("请求的方法：{}", method);
+
         log.info("请求的json方法体：{}", request.getBody());
+
         log.info("请求的方法参数：{}", request.getQueryParams());
+
         String host = Objects.requireNonNull(request.getLocalAddress()).getHostString();
         log.info("请求的ip地址：{}", host);
+
         ServerHttpResponse response = exchange.getResponse();
 
 //        2. （白名单）
@@ -64,14 +88,25 @@ public class CustomGlobalFilter implements GlobalFilter {
         String sign = headers.getFirst("sign");
         String body = headers.getFirst("body");
 
-        //todo 数据库中查询 accessKey是否存在
-        if (!Objects.equals("AzurLane", accessKey)) {
+        //判断ak、sk
+        User user = null;
+        try {
+            user = userService.getInvokeUser(accessKey);
+        } catch (Exception e) {
+            log.info("getInvokeUser Error", e);
+        }
+        if (user == null) {
             return handleNoAuth(response);
         }
-        if (Long.parseLong(Objects.requireNonNull(nonce)) > 10000) {
+        String secretKey = user.getSecretKey();
+        String serverSign = SignUtils.getSign(body, secretKey);
+        if (!Objects.equals(sign, serverSign)) {
             return handleNoAuth(response);
         }
 
+        if (Long.parseLong(Objects.requireNonNull(nonce)) > 10000) {
+            return handleNoAuth(response);
+        }
 
         // 判断是否过期
         Calendar beforeTime = Calendar.getInstance();
@@ -81,19 +116,23 @@ public class CustomGlobalFilter implements GlobalFilter {
         if (Long.parseLong(Objects.requireNonNull(timestamp)) < oldTime / 1000) {
             throw new RuntimeException("无权限");
         }
-        // todo secretKey 是从数据库中查询获取 根据上面 accessKey
-        String serverSign = SignUtils.getSign(body, "Helena");
-        if (!Objects.equals(serverSign, sign)) {
+
+//        4. 请求的模拟接口是否存在，请求方式是否匹配
+        InterfaceInfo interfaceInfo = null;
+        try {
+            interfaceInfo = interfaceInfoService.getInterfaceInfo(path, Objects.requireNonNull(method).toString());
+        } catch (Exception e) {
+            log.info("getInterfaceInfo Error", e);
+        }
+        if (interfaceInfo == null) {
             return handleNoAuth(response);
         }
+//        5. 调用模拟接口（请求转发）响应日志
 
-//        4. 请求的模拟接口是否存在
-//      todo 从数据库中查询模拟接口是否存在，以及请求方法是否匹配（请求参数是否相同） Feign远程调用
-
-//        5. 调用模拟接口（请求转发）
-
-//        6. 响应日志
-        return handlerResponseLog(exchange, chain);
+//        todo 判断请求是否绕过网关（请求染色）
+        Long userId = user.getId();
+        Long interfaceInfoId = interfaceInfo.getId();
+        return handlerResponseLog(exchange, chain, interfaceInfoId, userId);
     }
 
     /**
@@ -106,7 +145,7 @@ public class CustomGlobalFilter implements GlobalFilter {
      * @param chain
      * @return
      */
-    public Mono<Void> handlerResponseLog(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> handlerResponseLog(ServerWebExchange exchange, GatewayFilterChain chain, Long interfaceInfoId, Long userId) {
         try {
             ServerHttpResponse originalResponse = exchange.getResponse();
             //  缓存数据 工厂
@@ -127,7 +166,12 @@ public class CustomGlobalFilter implements GlobalFilter {
                             //  拼接字符串
                             return super.writeWith(
                                     fluxBody.map(dataBuffer -> {
-                                        //  todo 7.调用成功，调用接口次数 + 1 invokeCount
+                                        //  6.调用成功，调用接口次数 + 1 invokeCount
+                                        try {
+                                            userInterfaceInfoService.invokeCount(interfaceInfoId, userId);
+                                        } catch (Exception e) {
+                                            log.error("invokeCount Error", e);
+                                        }
 
                                         byte[] content = new byte[dataBuffer.readableByteCount()];
                                         dataBuffer.read(content);

@@ -1,8 +1,15 @@
 package com.yupi.project.provider;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yupi.project.common.ErrorCode;
+import com.yupi.project.exception.BusinessException;
+import com.yupi.project.mapper.UserMapper;
 import com.yupi.project.model.entity.User;
 import com.yupi.project.service.InnerUserService;
-import org.springframework.stereotype.Service;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboService;
+
+import javax.annotation.Resource;
 
 /**
  * InnerUserService
@@ -11,16 +18,19 @@ import org.springframework.stereotype.Service;
  * @version 1.0
  * @description 內部查詢用户接口实现类
  */
-@Service
+@DubboService
 public class InnerUserServiceImpl implements InnerUserService {
 
-    @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
-        return 0;
-    }
+    @Resource
+    private UserMapper userMapper;
 
     @Override
-    public User getInvokeUser(String ak, String sk) {
-        return null;
+    public User getInvokeUser(String ak) {
+        if (StringUtils.isBlank(ak)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("accessKey", ak);
+        return userMapper.selectOne(wrapper);
     }
 }

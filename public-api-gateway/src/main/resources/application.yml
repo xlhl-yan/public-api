@@ -46,7 +46,7 @@ dubbo:
     name: dubbo-springboot-demo-consumer
   protocol:
     name: dubbo
-    port: -1
+    port: 20881
   registry:
-    id: nacos-registry
+    id: nacos-consumer
     address: nacos://localhost:8848

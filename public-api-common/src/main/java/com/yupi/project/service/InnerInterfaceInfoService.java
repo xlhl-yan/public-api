@@ -18,11 +18,4 @@ public interface InnerInterfaceInfoService {
      */
     InterfaceInfo getInterfaceInfo(String path, String method);
 
-    /**
-     * 参数校验
-     *
-     * @param interfaceInfo 参数封装体
-     * @param add           是否为添加请求
-     */
-    void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add);
 }

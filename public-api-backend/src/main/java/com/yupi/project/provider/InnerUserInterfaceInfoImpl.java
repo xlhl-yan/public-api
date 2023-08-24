@@ -1,7 +1,10 @@
 package com.yupi.project.provider;
 
-import com.yupi.project.model.entity.UserInterfaceInfo;
 import com.yupi.project.service.InnerUserInterfaceInfoService;
+import com.yupi.project.service.UserInterfaceInfoService;
+import org.apache.dubbo.config.annotation.DubboService;
+
+import javax.annotation.Resource;
 
 /**
  * InnerUserInterfaceInfoImpl
@@ -10,15 +13,15 @@ import com.yupi.project.service.InnerUserInterfaceInfoService;
  * @version 1.0
  * @description 奇怪的实现类
  */
+@DubboService
 public class InnerUserInterfaceInfoImpl implements InnerUserInterfaceInfoService {
 
-    @Override
-    public void validUserInterfaceInfo(UserInterfaceInfo interfaceInfo, boolean add) {
-
-    }
+    @Resource
+    private UserInterfaceInfoService userInterfaceInfoService;
 
     @Override
     public Boolean invokeCount(Long interfaceInfoId, Long userId) {
-        return null;
+
+        return userInterfaceInfoService.invokeCount(interfaceInfoId, userId);
     }
 }
