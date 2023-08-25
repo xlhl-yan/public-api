@@ -112,3 +112,21 @@ create table if not exists user_interface_info
     updateTime      datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     isDelete        tinyint  default 0                 not null comment '是否删除'
 ) comment '用户调用接口';
+
+-- 模拟数据
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (1, 1, '1', 66, 10, 0, '2023-08-22 17:31:44', '2023-08-24 20:30:41', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (4, 2, '1', 15, 21, 0, '2023-08-24 20:28:04', '2023-08-24 20:28:01', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (5, 1, '2', 14, 20, 0, '2023-08-24 20:28:34', '2023-08-24 20:28:37', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (6, 1, '3', 12, 23, 0, '2023-08-24 20:29:16', '2023-08-24 20:28:52', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (7, 1, '4', 12, 23, 0, '2023-08-24 20:29:16', '2023-08-24 20:28:53', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (8, 1, '5', 13, 23, 0, '2023-08-24 20:29:17', '2023-08-24 20:28:55', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (9, 1, '6', 12, 23, 0, '2023-08-24 20:29:18', '2023-08-24 20:28:56', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (10, 1, '6', 24, 23, 0, '2023-08-24 20:29:19', '2023-08-24 20:28:57', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (11, 1, '3', 24, 23, 0, '2023-08-24 20:29:22', '2023-08-24 20:28:58', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (12, 1, '3', 12, 23, 0, '2023-08-24 20:29:22', '2023-08-24 20:29:08', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (13, 1, '1', 25, 23, 0, '2023-08-24 20:29:22', '2023-08-24 20:29:10', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (14, 1, '1', 21, 23, 0, '2023-08-24 20:29:22', '2023-08-24 20:29:10', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (15, 1, '1', 25, 23, 0, '2023-08-24 20:29:22', '2023-08-24 20:29:11', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (16, 1, '1', 13, 23, 0, '2023-08-24 20:29:22', '2023-08-24 20:29:13', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (17, 1, '1', 11, 23, 0, '2023-08-24 20:29:22', '2023-08-24 20:29:13', 0);
+INSERT INTO public_api.user_interface_info (id, userId, interfaceInfoId, totalNum, leftNum, status, createTime, updateTime, isDelete) VALUES (18, 1, '1', 12, 23, 0, '2023-08-24 20:29:22', '2023-08-24 20:29:15', 0);

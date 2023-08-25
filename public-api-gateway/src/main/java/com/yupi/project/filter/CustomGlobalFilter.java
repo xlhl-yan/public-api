@@ -129,10 +129,19 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         if (interfaceInfo == null) {
             return handleNoAuth(response);
         }
-//        5. 调用模拟接口（请求转发）响应日志
-
-//        todo 判断请求是否绕过网关（请求染色）
+        //  判断用户调用次数是否还有余裕
         Long userId = user.getId();
+        Integer residueNum = null;
+        try {
+            residueNum = userInterfaceInfoService.userCallInterfaceNum(interfaceInfo.getId(), userId);
+        } catch (Exception e) {
+            log.error("userCallInterfaceNum Error", e);
+        }
+        if (residueNum == null || residueNum <= 0) {
+            return handleNoAuth(response);
+        }
+//        5. 调用模拟接口（请求转发）响应日志
+//        todo 判断请求是否绕过网关（请求染色）
         Long interfaceInfoId = interfaceInfo.getId();
         return handlerResponseLog(exchange, chain, interfaceInfoId, userId);
     }
